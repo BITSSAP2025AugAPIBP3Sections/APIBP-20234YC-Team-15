@@ -1,119 +1,139 @@
-// package com.appointment;
+package com.appointment;
 
-// import com.appointment.controller.AppointmentController;
-// import com.appointment.dto.AppointmentRequest;
-// import com.appointment.dto.AppointmentResponse;
-// import com.appointment.model.Appointment;
-// import com.appointment.service.AppointmentService;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// import org.springframework.boot.test.mock.mockito.MockBean;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
+import com.appointment.controller.AppointmentController;
+import com.appointment.dto.AppointmentRequest;
+import com.appointment.dto.AppointmentResponse;
+import com.appointment.model.Appointment;
+import com.appointment.service.AppointmentService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-// import java.time.LocalDateTime;
-// import java.util.Arrays;
-// import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.Mockito.when;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// /**
-//  * Unit tests for AppointmentController
-//  */
-// @WebMvcTest(AppointmentController.class)
-// class AppointmentControllerTest {
+/**
+ * Unit tests for AppointmentController
+ */
+@WebMvcTest(AppointmentController.class)
+class AppointmentControllerTest {
+	@Test
+	void testUpdateAppointment_Valid() throws Exception {
+		when(appointmentService.updateAppointment(eq(1L), any(AppointmentRequest.class))).thenReturn(appointmentResponse);
+		mockMvc.perform(put("/api/appointments/1")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(appointmentRequest)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true));
+	}
 
-//   @Autowired
-//   private MockMvc mockMvc;
+	@Test
+	void testUpdateAppointment_InvalidId() throws Exception {
+		when(appointmentService.updateAppointment(eq(99L), any(AppointmentRequest.class))).thenThrow(new com.appointment.exception.ResourceNotFoundException("Appointment not found"));
+		mockMvc.perform(put("/api/appointments/99")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(appointmentRequest)))
+			.andExpect(status().isNotFound());
+	}
 
-//   @Autowired
-//   private ObjectMapper objectMapper;
+	@Test
+	void testDeleteAppointment_Valid() throws Exception {
+		mockMvc.perform(delete("/api/appointments/1"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true));
+	}
 
-//   @MockBean
-//   private AppointmentService appointmentService;
+	@Test
+	void testDeleteAppointment_InvalidId() throws Exception {
+		doThrow(new com.appointment.exception.ResourceNotFoundException("Appointment not found")).when(appointmentService).deleteAppointment(99L);
+		mockMvc.perform(delete("/api/appointments/99"))
+			.andExpect(status().isNotFound());
+	}
 
-//   private AppointmentResponse appointmentResponse;
-//   private AppointmentRequest appointmentRequest;
+	@Test
+	void testCreateAppointment_InvalidProvider() throws Exception {
+		when(appointmentService.createAppointment(any(AppointmentRequest.class))).thenThrow(new com.appointment.exception.AppointmentException("Selected user is not a service provider"));
+		mockMvc.perform(post("/api/appointments")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(appointmentRequest)))
+			.andExpect(status().isBadRequest());
+	}
 
-//   @BeforeEach
-//   void setUp() {
-//     appointmentResponse = new AppointmentResponse();
-//     appointmentResponse.setId(1L);
-//     appointmentResponse.setCustomerId(1L);
-//     appointmentResponse.setCustomerName("John Doe");
-//     appointmentResponse.setServiceProviderId(2L);
-//     appointmentResponse.setServiceProviderName("Dr. Smith");
-//     appointmentResponse.setServiceType(Appointment.ServiceType.DOCTOR);
-//     appointmentResponse.setAppointmentDateTime(LocalDateTime.now().plusDays(1));
-//     appointmentResponse.setStatus(Appointment.Status.PENDING);
+	@Autowired
+	private MockMvc mockMvc;
 
-//     appointmentRequest = new AppointmentRequest();
-//     appointmentRequest.setCustomerId(1L);
-//     appointmentRequest.setServiceProviderId(2L);
-//     appointmentRequest.setServiceType(Appointment.ServiceType.DOCTOR);
-//     appointmentRequest.setAppointmentDateTime(LocalDateTime.now().plusDays(1));
-//     appointmentRequest.setNotes("Test appointment");
-//   }
+	@Autowired
+	private ObjectMapper objectMapper;
 
-//   @Test
-//   void testGetAllAppointments() throws Exception {
-//     List<AppointmentResponse> appointments = Arrays.asList(appointmentResponse);
-//     when(appointmentService.getAllAppointments()).thenReturn(appointments);
+	@MockBean
+	private AppointmentService appointmentService;
 
-//     mockMvc.perform(get("/api/appointments"))
-//       .andExpect(status().isOk())
-//       .andExpect(jsonPath("$.success").value(true))
-//       .andExpect(jsonPath("$.data").isArray())
-//       .andExpect(jsonPath("$.data[0].id").value(1));
-//   }
+	private AppointmentResponse appointmentResponse;
+	private AppointmentRequest appointmentRequest;
 
-//   @Test
-//   void testGetAppointmentById() throws Exception {
-//     when(appointmentService.getAppointmentById(1L)).thenReturn(appointmentResponse);
+	@BeforeEach
+	void setUp() {
+		appointmentResponse = new AppointmentResponse();
+		appointmentResponse.setId(1L);
+		appointmentResponse.setCustomerId(1L);
+		appointmentResponse.setCustomerName("John Doe");
+		appointmentResponse.setServiceProviderId(2L);
+		appointmentResponse.setServiceProviderName("Dr. Smith");
+		appointmentResponse.setServiceType(Appointment.ServiceType.DOCTOR);
+		appointmentResponse.setAppointmentDateTime(LocalDateTime.now().plusDays(1));
+		appointmentResponse.setStatus(Appointment.Status.PENDING);
 
-//     mockMvc.perform(get("/api/appointments/1"))
-//       .andExpect(status().isOk())
-//       .andExpect(jsonPath("$.success").value(true))
-//       .andExpect(jsonPath("$.data.id").value(1))
-//       .andExpect(jsonPath("$.data.customerName").value("John Doe"));
-//   }
+		appointmentRequest = new AppointmentRequest();
+		appointmentRequest.setCustomerId(1L);
+		appointmentRequest.setServiceProviderId(2L);
+		appointmentRequest.setServiceType(Appointment.ServiceType.DOCTOR);
+		appointmentRequest.setAppointmentDateTime(LocalDateTime.now().plusDays(1));
+	}
 
-//   @Test
-//   void testCreateAppointment() throws Exception {
-//     when(appointmentService.createAppointment(any(AppointmentRequest.class)))
-//       .thenReturn(appointmentResponse);
+	@Test
+	void testGetAllAppointments() throws Exception {
+		List<AppointmentResponse> appointments = Arrays.asList(appointmentResponse);
+		when(appointmentService.getAllAppointments()).thenReturn(appointments);
 
-//     mockMvc.perform(post("/api/appointments")
-//         .contentType(MediaType.APPLICATION_JSON)
-//         .content(objectMapper.writeValueAsString(appointmentRequest)))
-//       .andExpect(status().isCreated())
-//       .andExpect(jsonPath("$.success").value(true))
-//       .andExpect(jsonPath("$.data.id").value(1));
-//   }
+		mockMvc.perform(get("/api/appointments"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$.data[0].customerName").value("John Doe"));
+	}
 
-//   @Test
-//   void testUpdateAppointment() throws Exception {
-//     when(appointmentService.updateAppointment(any(Long.class), any(AppointmentRequest.class)))
-//       .thenReturn(appointmentResponse);
+	@Test
+	void testGetAppointmentById() throws Exception {
+		when(appointmentService.getAppointmentById(1L)).thenReturn(appointmentResponse);
 
-//     mockMvc.perform(put("/api/appointments/1")
-//         .contentType(MediaType.APPLICATION_JSON)
-//         .content(objectMapper.writeValueAsString(appointmentRequest)))
-//       .andExpect(status().isOk())
-//       .andExpect(jsonPath("$.success").value(true));
-//   }
+		mockMvc.perform(get("/api/appointments/1"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$.data.customerName").value("John Doe"));
+	}
 
-//   @Test
-//   void testDeleteAppointment() throws Exception {
-//     mockMvc.perform(delete("/api/appointments/1"))
-//       .andExpect(status().isOk())
-//       .andExpect(jsonPath("$.success").value(true))
-//       .andExpect(jsonPath("$.message").value("Appointment deleted successfully"));
-//   }
-// }
+	@Test
+	void testCreateAppointment() throws Exception {
+		when(appointmentService.createAppointment(any(AppointmentRequest.class))).thenReturn(appointmentResponse);
+
+			mockMvc.perform(post("/api/appointments")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(appointmentRequest)))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.success").value(true))
+				.andExpect(jsonPath("$.data.customerName").value("John Doe"));
+	}
+
+}

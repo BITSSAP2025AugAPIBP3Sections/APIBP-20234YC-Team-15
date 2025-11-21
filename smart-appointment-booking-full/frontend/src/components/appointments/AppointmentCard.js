@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateTime } from '../../utils/dateFormatter';
+import { formatDate, formatTime } from '../../utils/dateFormatter';
 
 const AppointmentCard = ({ appointment, isServiceProvider, onCancel, onStatusChange }) => {
   const getStatusClass = (status) => {
@@ -53,7 +53,7 @@ const AppointmentCard = ({ appointment, isServiceProvider, onCancel, onStatusCha
           <div className="info-row">
             <span className="info-label">Date & Time:</span>
             <span className="info-value">
-              {formatDateTime(appointment.appointmentDateTime)}
+              {`${formatDate(appointment.appointmentDateTime)} ${formatTime(appointment.appointmentDateTime)}`}
             </span>
           </div>
 
@@ -62,7 +62,7 @@ const AppointmentCard = ({ appointment, isServiceProvider, onCancel, onStatusCha
               <span className="info-label">Notes:</span>
               <span className="info-value">{appointment.notes}</span>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

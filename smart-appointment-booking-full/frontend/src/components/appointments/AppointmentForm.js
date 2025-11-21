@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import appointmentService from '../../services/appointmentService';
 import userService from '../../services/userService';
-import '../styles/Dashboard.css';
+import { Container, Box, Typography, TextField, Button, Alert, Card, CardContent, MenuItem, CircularProgress } from '@mui/material';
 
 const AppointmentForm = () => {
   const { id } = useParams();
@@ -77,6 +77,14 @@ const AppointmentForm = () => {
         serviceProviderId: parseInt(formData.serviceProviderId),
       };
 
+      // Ensure appointmentDateTime includes seconds (yyyy-MM-ddTHH:mm:ss)
+      if (
+        appointmentData.appointmentDateTime &&
+        appointmentData.appointmentDateTime.length === 16
+      ) {
+        appointmentData.appointmentDateTime += ':00';
+      }
+
       let response;
       if (isEditMode) {
         response = await appointmentService.updateAppointment(id, appointmentData);
@@ -118,95 +126,96 @@ const AppointmentForm = () => {
   };
 
   return (
-    <div className="form-container">
-      <div className="form-card">
-        <h2>{isEditMode ? 'Edit Appointment' : 'Book New Appointment'}</h2>
-
-        {error && <div className="alert alert-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="appointment-form">
-          <div className="form-group">
-            <label htmlFor="serviceProviderId">Service Provider *</label>
-            <select
-              id="serviceProviderId"
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Card sx={{ borderRadius: 4, boxShadow: 4 }}>
+        <CardContent>
+          <Typography variant="h4" color="primary" gutterBottom align="center">
+            {isEditMode ? 'Edit Appointment' : 'Book New Appointment'}
+          </Typography>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+          )}
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+              select
+              label="Service Provider *"
               name="serviceProviderId"
               value={formData.serviceProviderId}
               onChange={handleChange}
+              fullWidth
               required
+              margin="normal"
             >
-              <option value="">Select a provider</option>
+              <MenuItem value="">Select a provider</MenuItem>
               {providers.map((provider) => (
-                <option key={provider.id} value={provider.id}>
+                <MenuItem key={provider.id} value={provider.id}>
                   {provider.name} - {provider.email}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="serviceType">Service Type *</label>
-            <select
-              id="serviceType"
+            </TextField>
+            <TextField
+              select
+              label="Service Type *"
               name="serviceType"
               value={formData.serviceType}
               onChange={handleChange}
+              fullWidth
               required
+              margin="normal"
             >
               {serviceTypes.map((type) => (
-                <option key={type.value} value={type.value}>
+                <MenuItem key={type.value} value={type.value}>
                   {type.label}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="appointmentDateTime">Date & Time *</label>
-            <input
-              type="datetime-local"
-              id="appointmentDateTime"
+            </TextField>
+            <TextField
+              label="Date & Time *"
               name="appointmentDateTime"
+              type="datetime-local"
               value={formData.appointmentDateTime}
               onChange={handleChange}
-              min={getMinDateTime()}
+              fullWidth
               required
+              margin="normal"
+              inputProps={{ min: getMinDateTime() }}
+              helperText="Appointment must be at least 24 hours in advance"
             />
-            <small className="form-help">
-              Appointment must be at least 24 hours in advance
-            </small>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="notes">Notes (Optional)</label>
-            <textarea
-              id="notes"
+            <TextField
+              label="Notes (Optional)"
               name="notes"
               value={formData.notes}
               onChange={handleChange}
-              rows="4"
+              fullWidth
+              multiline
+              rows={4}
+              margin="normal"
               placeholder="Add any additional information or special requirements"
             />
-          </div>
-
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('/dashboard')}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : isEditMode ? 'Update Appointment' : 'Book Appointment'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+              <Button
+                type="button"
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate('/dashboard')}
+                sx={{ mr: 2 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} /> : null}
+              >
+                {loading ? 'Saving...' : isEditMode ? 'Update Appointment' : 'Book Appointment'}
+              </Button>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 

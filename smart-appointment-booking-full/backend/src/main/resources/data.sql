@@ -8,6 +8,7 @@ INSERT INTO users (name, email, password, phone, role, active, created_at, updat
 ('Admin User', 'admin@example.com', 'admin123', '5550000000', 'ADMIN', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Sample Appointments
+
 -- Note: Adjust the appointment_datetime to future dates when you use this
 INSERT INTO appointments (customer_id, provider_id, service_type, appointment_datetime, notes, status, created_at, updated_at) VALUES
 (1, 3, 'DOCTOR', '2025-11-25 10:00:00', 'Regular checkup', 'CONFIRMED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import appointmentService from '../../services/appointmentService';
 import userService from '../../services/userService';
 import LoadingSpinner from '../common/LoadingSpinner';
-import '../styles/Dashboard.css';
+import '../../styles/Dashboard.css';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);

@@ -1,4 +1,13 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import theme from './styles/theme';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/common/Navbar';
@@ -13,107 +22,145 @@ import './styles/App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Navbar />
-          <main className="main-content">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Navbar />
+            <main className="main-content">
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-              {/* Protected Routes */}
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <UserDashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <PrivateRoute>
-                    <AdminDashboard />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/appointments/new"
-                element={
-                  <PrivateRoute>
-                    <AppointmentForm />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/appointments/edit/:id"
-                element={
-                  <PrivateRoute>
-                    <AppointmentForm />
-                  </PrivateRoute>
-                }
-              />
+                {/* Protected Routes */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <UserDashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <PrivateRoute>
+                      <AdminDashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/appointments/new"
+                  element={
+                    <PrivateRoute>
+                      <AppointmentForm />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/appointments/edit/:id"
+                  element={
+                    <PrivateRoute>
+                      <AppointmentForm />
+                    </PrivateRoute>
+                  }
+                />
 
-              {/* 404 Not Found */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
+                {/* 404 Not Found */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
 // Home Component
 const Home = () => {
   return (
-    <div className="home-container">
-      <div className="hero-section">
-        <h1>Welcome to Smart Appointment Booking</h1>
-        <p>Book appointments with service providers easily and efficiently</p>
-        <div className="cta-buttons">
-          <a href="/register" className="btn btn-primary">Get Started</a>
-          <a href="/login" className="btn btn-secondary">Login</a>
-        </div>
-      </div>
-      <div className="features-section">
-        <h2>Our Services</h2>
-        <div className="features-grid">
-          <div className="feature-card">
-            <h3>🏥 Medical Consultations</h3>
-            <p>Book appointments with doctors and healthcare professionals</p>
-          </div>
-          <div className="feature-card">
-            <h3>✂️ Salon & Barber</h3>
-            <p>Schedule your haircut and styling appointments</p>
-          </div>
-          <div className="feature-card">
-            <h3>💼 Business Consulting</h3>
-            <p>Connect with business consultants and advisors</p>
-          </div>
-          <div className="feature-card">
-            <h3>⚖️ Legal Services</h3>
-            <p>Book consultations with legal professionals</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Grid container spacing={4} alignItems="center">
+        <Grid item xs={12} md={6}>
+          <Typography variant="h1" color="primary" gutterBottom>
+            Smart Appointment Booking
+          </Typography>
+          <Typography variant="h5" color="text.secondary" paragraph>
+            Book appointments with service providers easily and efficiently.
+          </Typography>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item>
+              <Button href="/register" variant="contained" color="primary" size="large">
+                Get Started
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button href="/login" variant="outlined" color="secondary" size="large">
+                Login
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">🏥 Medical Consultations</Typography>
+                  <Typography variant="body2">Book appointments with doctors and healthcare professionals</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">✂️ Salon & Barber</Typography>
+                  <Typography variant="body2">Schedule your haircut and styling appointments</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">💼 Business Consulting</Typography>
+                  <Typography variant="body2">Connect with business consultants and advisors</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">⚖️ Legal Services</Typography>
+                  <Typography variant="body2">Book consultations with legal professionals</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 
 // 404 Not Found Component
 const NotFound = () => {
   return (
-    <div className="not-found">
-      <h1>404 - Page Not Found</h1>
-      <p>The page you're looking for doesn't exist.</p>
-      <a href="/" className="btn btn-primary">Go Home</a>
-    </div>
+    <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
+      <Typography variant="h2" color="error" gutterBottom>
+        404 - Page Not Found
+      </Typography>
+      <Typography variant="body1" color="text.secondary" paragraph>
+        The page you're looking for doesn't exist.
+      </Typography>
+      <Button href="/" variant="contained" color="primary">
+        Go Home
+      </Button>
+    </Container>
   );
 };
 

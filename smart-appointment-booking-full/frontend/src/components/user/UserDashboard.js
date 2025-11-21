@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import appointmentService from '../../services/appointmentService';
 import AppointmentCard from '../appointments/AppointmentCard';
 import LoadingSpinner from '../common/LoadingSpinner';
-import '../styles/Dashboard.css';
+import { Container, Box, Typography, Button, Grid, Card, CardContent, Tabs, Tab, Alert } from '@mui/material';
 
 const UserDashboard = () => {
   const { user, isServiceProvider } = useAuth();
@@ -85,120 +85,117 @@ const UserDashboard = () => {
 
   if (loading) return <LoadingSpinner />;
 
+  const tabOptions = [
+    { label: 'Upcoming', value: 'upcoming' },
+    { label: 'All', value: 'all' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Confirmed', value: 'confirmed' },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Cancelled', value: 'cancelled' },
+  ];
+
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <div>
-          <h1>Welcome, {user?.name}!</h1>
-          <p className="dashboard-subtitle">
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box>
+          <Typography variant="h3" color="primary" gutterBottom>
+            Welcome, {user?.name}!
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
             {isServiceProvider
               ? 'Manage your appointments and schedule'
               : 'View and manage your bookings'}
-          </p>
-        </div>
+          </Typography>
+        </Box>
         {!isServiceProvider && (
-          <Link to="/appointments/new" className="btn btn-primary">
+          <Button component={Link} to="/appointments/new" variant="contained" color="primary" size="large">
             + Book New Appointment
-          </Link>
+          </Button>
         )}
-      </div>
+      </Box>
 
-      {error && <div className="alert alert-error">{error}</div>}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Total Appointments</h3>
-          <p className="stat-number">{appointments.length}</p>
-        </div>
-        <div className="stat-card">
-          <h3>Upcoming</h3>
-          <p className="stat-number">{upcomingAppointments.length}</p>
-        </div>
-        <div className="stat-card">
-          <h3>Pending</h3>
-          <p className="stat-number">
-            {appointments.filter(a => a.status === 'PENDING').length}
-          </p>
-        </div>
-        <div className="stat-card">
-          <h3>Completed</h3>
-          <p className="stat-number">
-            {appointments.filter(a => a.status === 'COMPLETED').length}
-          </p>
-        </div>
-      </div>
+      <Grid container spacing={2} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Total Appointments</Typography>
+              <Typography variant="h4" color="primary">{appointments.length}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Upcoming</Typography>
+              <Typography variant="h4" color="primary">{upcomingAppointments.length}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Pending</Typography>
+              <Typography variant="h4" color="primary">{appointments.filter(a => a.status === 'PENDING').length}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Completed</Typography>
+              <Typography variant="h4" color="primary">{appointments.filter(a => a.status === 'COMPLETED').length}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Tabs */}
-      <div className="tabs">
-        <button
-          className={`tab ${activeTab === 'upcoming' ? 'active' : ''}`}
-          onClick={() => setActiveTab('upcoming')}
-        >
-          Upcoming
-        </button>
-        <button
-          className={`tab ${activeTab === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveTab('all')}
-        >
-          All
-        </button>
-        <button
-          className={`tab ${activeTab === 'pending' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pending')}
-        >
-          Pending
-        </button>
-        <button
-          className={`tab ${activeTab === 'confirmed' ? 'active' : ''}`}
-          onClick={() => setActiveTab('confirmed')}
-        >
-          Confirmed
-        </button>
-        <button
-          className={`tab ${activeTab === 'completed' ? 'active' : ''}`}
-          onClick={() => setActiveTab('completed')}
-        >
-          Completed
-        </button>
-        <button
-          className={`tab ${activeTab === 'cancelled' ? 'active' : ''}`}
-          onClick={() => setActiveTab('cancelled')}
-        >
-          Cancelled
-        </button>
-      </div>
+      <Tabs
+        value={activeTab}
+        onChange={(_, value) => setActiveTab(value)}
+        variant="scrollable"
+        scrollButtons="auto"
+        sx={{ mb: 3 }}
+      >
+        {tabOptions.map(tab => (
+          <Tab key={tab.value} label={tab.label} value={tab.value} />
+        ))}
+      </Tabs>
 
       {/* Appointments List */}
-      <div className="appointments-section">
-        <h2>
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h5" gutterBottom>
           {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Appointments
-        </h2>
+        </Typography>
 
         {filteredAppointments.length === 0 ? (
-          <div className="empty-state">
-            <p>No appointments found.</p>
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography variant="body1" color="text.secondary">No appointments found.</Typography>
             {!isServiceProvider && activeTab === 'upcoming' && (
-              <Link to="/appointments/new" className="btn btn-primary">
+              <Button component={Link} to="/appointments/new" variant="contained" color="primary" sx={{ mt: 2 }}>
                 Book Your First Appointment
-              </Link>
+              </Button>
             )}
-          </div>
+          </Box>
         ) : (
-          <div className="appointments-grid">
+          <Grid container spacing={2}>
             {filteredAppointments.map((appointment) => (
-              <AppointmentCard
-                key={appointment.id}
-                appointment={appointment}
-                isServiceProvider={isServiceProvider}
-                onCancel={handleCancelAppointment}
-                onStatusChange={handleStatusChange}
-              />
+              <Grid item xs={12} sm={6} md={4} key={appointment.id}>
+                <AppointmentCard
+                  appointment={appointment}
+                  isServiceProvider={isServiceProvider}
+                  onCancel={handleCancelAppointment}
+                  onStatusChange={handleStatusChange}
+                />
+              </Grid>
             ))}
-          </div>
+          </Grid>
         )}
-      </div>
-    </div>
+      </Box>
+    </Container>
   );
 };
 

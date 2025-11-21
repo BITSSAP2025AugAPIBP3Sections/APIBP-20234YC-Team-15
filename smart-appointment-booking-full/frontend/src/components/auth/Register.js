@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import '../styles/Auth.css';
+import { Container, Box, Typography, TextField, Button, Alert, Card, CardContent, CircularProgress, MenuItem } from '@mui/material';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -61,111 +61,105 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>Create Account</h2>
-        <p className="auth-subtitle">Sign up to start booking appointments</p>
-
-        {error && <div className="alert alert-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Card sx={{ borderRadius: 4, boxShadow: 4 }}>
+        <CardContent>
+          <Typography variant="h4" color="primary" gutterBottom align="center">
+            Create Account
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" align="center" gutterBottom>
+            Sign up to start booking appointments
+          </Typography>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+          )}
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+              label="Full Name"
               name="name"
+              type="text"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your full name"
+              fullWidth
               required
-              minLength="2"
+              margin="normal"
+              inputProps={{ minLength: 2 }}
             />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
+            <TextField
+              label="Email Address"
               name="email"
+              type="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              fullWidth
               required
+              margin="normal"
             />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="phone">Phone Number</label>
-            <input
-              type="tel"
-              id="phone"
+            <TextField
+              label="Phone Number"
               name="phone"
+              type="tel"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="Enter your phone number"
-              pattern="[0-9]{10,15}"
+              fullWidth
+              margin="normal"
+              inputProps={{ pattern: '[0-9]{10,15}' }}
             />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
+            <TextField
+              label="Password"
               name="password"
+              type="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Create a password (min 6 characters)"
+              fullWidth
               required
-              minLength="6"
+              margin="normal"
+              inputProps={{ minLength: 6 }}
             />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
+            <TextField
+              label="Confirm Password"
               name="confirmPassword"
+              type="password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="Confirm your password"
+              fullWidth
               required
+              margin="normal"
             />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="role">Account Type</label>
-            <select
-              id="role"
+            <TextField
+              select
+              label="Account Type"
               name="role"
               value={formData.role}
               onChange={handleChange}
+              fullWidth
               required
+              margin="normal"
             >
-              <option value="CUSTOMER">Customer (Book Appointments)</option>
-              <option value="SERVICE_PROVIDER">Service Provider (Provide Services)</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary btn-block"
-            disabled={loading}
-          >
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          <p>
-            Already have an account? <Link to="/login">Login here</Link>
-          </p>
-        </div>
-      </div>
-    </div>
+              <MenuItem value="CUSTOMER">Customer (Book Appointments)</MenuItem>
+              <MenuItem value="SERVICE_PROVIDER">Service Provider (Provide Services)</MenuItem>
+            </TextField>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              size="large"
+              sx={{ mt: 2, mb: 1 }}
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} /> : null}
+            >
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </Button>
+          </Box>
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Typography variant="body2">
+              Already have an account? <Link to="/login">Login here</Link>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
