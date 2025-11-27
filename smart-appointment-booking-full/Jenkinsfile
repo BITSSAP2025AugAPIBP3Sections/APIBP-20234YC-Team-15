@@ -15,30 +15,30 @@ pipeline {
         }
         stage('Backend Build') {
             steps {
-                sh './backend/mvnw clean install'
+                sh './smart-appointment-booking-full/backend/mvnw clean install'
             }
         }
         stage('Frontend Build') {
             steps {
-                sh 'cd frontend && npm install'
-                sh 'cd frontend && npm run build'
+                sh 'cd smart-appointment-booking-full/frontend && npm install'
+                sh 'cd smart-appointment-booking-full/frontend && npm run build'
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh './backend/mvnw sonar:sonar -Dsonar.login=$SONARQUBE_TOKEN'
+                    sh './smart-appointment-booking-full/backend/mvnw sonar:sonar -Dsonar.login=$SONARQUBE_TOKEN'
                 }
             }
         }
         stage('Docker Build') {
             steps {
-                sh 'docker-compose build'
+                sh 'cd smart-appointment-booking-full && docker-compose build'
             }
         }
         stage('Docker Deploy') {
             steps {
-                sh 'docker-compose up -d --build'
+                sh 'cd smart-appointment-booking-full && docker-compose up -d --build'
             }
         }
     }
