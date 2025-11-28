@@ -26,7 +26,7 @@ public class SwaggerConfig {
         .version("1.0.0")
         .description("REST API for managing appointments with service providers")
         .contact(new Contact()
-          .name("Your Name")
+          .name("Nilay Shekhar")
           .email("nilayshekhar16@gmail.cn")
           .url("https://github.com/nilayshekhar"))
         .license(new License()
@@ -34,7 +34,7 @@ public class SwaggerConfig {
           .url("https://opensource.org/licenses/MIT")))
       .servers(List.of(
         new Server().url("http://localhost:8080").description("Local Development Server"),
-        new Server().url("https://production-url.com").description("Production Server")
+        new Server().url("http://18.61.253.86:8080").description("Production Server")
       ));
   }
 }
