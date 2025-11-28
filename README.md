@@ -1,4 +1,4 @@
-# 📁 Smart Appointment Booking Platform
+# 📁 Smart Appointment Booking System
 
 🤖 API-Driven Appointment Management for Modern Businesses
 
