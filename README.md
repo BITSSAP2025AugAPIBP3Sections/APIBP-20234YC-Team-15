@@ -480,6 +480,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Developed by Nilay Shekhar**
 
-[Report Bug](https://github.com/BITSSAP2025AugAPIBP3Sections/APIBP-20234YC-Team-15/issues) · [Request Feature](https://github.com/BITSSAP2025AugAPIBP3Sections/APIBP-20234YC-Team-15/issues) · [Documentation](https://github.com/BITSSAP2025AugAPIBP3Sections/APIBP-20234YC-Team-15/wiki)
-
 </div>
